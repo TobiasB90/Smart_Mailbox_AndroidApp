@@ -3,6 +3,8 @@ using TMPro;
 
 public class UIManager : MonoBehaviour {
 
+    [SerializeField] private GameObject LoadingCircle;
+
     [SerializeField] private GameObject HomeContent;
     [SerializeField] private GameObject HistoryContent;
     [SerializeField] private GameObject SettingsContent;
@@ -31,7 +33,13 @@ public class UIManager : MonoBehaviour {
     public void Start()
     {
         // Initialie home screen at the start
+        LoadingCircle.SetActive(false);
         initHomescreen();
+    }
+
+    public void Update()
+    {
+        LoadingCircle.transform.Rotate(new Vector3(0, 0, -100 * Time.deltaTime));
     }
 
     public void initHomescreen()
@@ -72,6 +80,7 @@ public class UIManager : MonoBehaviour {
         // Set the other contents as inactive
         HomeContent.SetActive(false);
         SettingsContent.SetActive(false);
+        LoadingCircle.SetActive(false);
 
         // Set the home content as active
         HistoryContent.SetActive(true);
@@ -93,22 +102,20 @@ public class UIManager : MonoBehaviour {
         // Set the other contents as inactive
         HistoryContent.SetActive(false);
         HomeContent.SetActive(false);
+        LoadingCircle.SetActive(false);
 
         // Set the settings content as active
         SettingsContent.SetActive(true);
-
-        // Get the current networking settings and display them
-        Settings_InputField_ArduinoID.text = networkManager.ArduinoID.ToString();
-        Settings_InputField_ServerURL.text = networkManager.ServerIP;
-        Settings_InputField_ServerPHP.text = networkManager.ServerPHP;
     }
 
     public void SaveSettings()
     {
         // Save the inputs to the variables from the networkmanager
-        networkManager.ArduinoID    = int.Parse(Settings_InputField_ArduinoID.text);
-        networkManager.ServerIP     = Settings_InputField_ServerURL.text;
-        networkManager.ServerPHP    = Settings_InputField_ServerPHP.text;
+                
+        networkManager.ServerIP     = Settings_InputField_ServerURL.text.Remove(Settings_InputField_ServerURL.text.Length - 1, 1);
+        networkManager.ServerPHP    = Settings_InputField_ServerPHP.text.Remove(Settings_InputField_ServerPHP.text.Length - 1, 1);
         SettingsSavedText.SetActive(true);
+        TMPro.TextMeshProUGUI text = SettingsSavedText.GetComponent<TMPro.TextMeshProUGUI>();
+        text.text = "Server URL: '" + networkManager.ServerIP + "/" + networkManager.ServerPHP + "' saved!";
     }
 }
